@@ -14,6 +14,7 @@ class WordleMäng:
         self.praegune_sõna_indeks = 0
         self.sõna = self.sõnad[self.praegune_sõna_indeks]
         self.jäänud_katsed = 6
+        self.current_row = 0 
 
         self.haldus_raam = tk.Frame(self.meister, bg="lightblue")
         self.haldus_raam.pack(side="top", pady=10)
@@ -65,30 +66,30 @@ class WordleMäng:
         for rida in self.sõna_kastid:
             for kast in rida:
                 kast.delete(0, tk.END)
-                kast.config(bg="black", fg="blue")
+                kast.config(bg="pink", fg="blue")
 
     def loo_sõnaruudustik(self):
         self.sõna_raam = tk.Frame(self.meister, bg="lightblue")
         self.sõna_raam.pack(side="top", pady=10)
 
-        self.sõna_kastid = []
+        self.sõna_kastid=[]
         for i in range(6):
-            rida_kastid = []
+            rida_kastid=[]
             for j in range(5):
-                kast = tk.Entry(self.sõna_raam, width=3, font=("Helvetica", 24), state="normal", bg="pink", fg="blue")
+                kast=tk.Entry(self.sõna_raam, width=3, font=("Helvetica", 24), state="normal", bg="pink", fg="blue")
                 kast.grid(row=i, column=j)
                 rida_kastid.append(kast)
             self.sõna_kastid.append(rida_kastid)
 
     def loo_tähestikuruudustik(self):
-        self.tähestiku_raam = tk.Frame(self.meister, bg="lightblue")
+        self.tähestiku_raam=tk.Frame(self.meister, bg="lightblue")
         self.tähestiku_raam.pack(side="top")
 
-        tähestik = "abcdefghijklmnopqrstuvwxyz"
+        tähestik="abcdefghijklmnopqrstuvwxyzõüäö"
 
         for i, täht in enumerate(tähestik):
-            rida = i // 9
-            nupp = tk.Button(self.tähestiku_raam, text=täht, width=3, font=("Helvetica", 16), bg="pink", command=lambda t=täht: self.vali_täht(t))
+            rida=i//9
+            nupp=tk.Button(self.tähestiku_raam, text=täht, width=3, font=("Helvetica", 16), bg="pink", command=lambda t=täht: self.vali_täht(t))
             nupp.grid(row=rida, column=i % 9)
 
     def loo_kinnituse_nupp(self):
@@ -103,57 +104,59 @@ class WordleMäng:
         if self.jäänud_katsed == 0:
             return
 
-        for rida in self.sõna_kastid:
-            for kast in rida:
-                if kast.get() == "":
-                    kast.delete(0, tk.END)
-                    kast.insert(0, täht)
-                    return
+        for kast in self.sõna_kastid[self.current_row]:
+            if kast.get()=="":
+                kast.delete(0, tk.END)
+                kast.insert(0, täht)
+                return
 
     def kontrolli_sõna(self):
-        # Вернуть все ячейки обратно к черному цвету
-        for rida in self.sõna_kastid:
-            for kast in rida:
-                kast.config(bg="black")
+        praegune_sõna=[kast.get() for kast in self.sõna_kastid[self.current_row]]
 
-        praegune_sõna = [kast.get() for rida_kastid in self.sõna_kastid for kast in rida_kastid]
-        print("Загаданное слово:", self.sõna)
-        print("Введенное слово:", praegune_sõna)
         if not any(praegune_sõna):
             return
 
-        õiged_tähed = []
-        vale_positsioonid = []
+        õiged_tähed=[]
+        vale_positsioonil=[]
         for i, täht in enumerate(praegune_sõna):
-            if i < len(self.sõna):
-                if täht == self.sõna[i]:
-                    õiged_tähed.append(i)
-                elif täht in self.sõna:
-                    vale_positsioonid.append(i)
+            if täht==self.sõna[i]:
+                õiged_tähed.append(i)
+            elif täht in self.sõna:
+                vale_positsioonil.append(i)
 
-        for i in range(len(praegune_sõna)):
+        for i, kast in enumerate(self.sõna_kastid[self.current_row]):
             if i in õiged_tähed:
-                self.sõna_kastid[i // 5][i % 5].config(bg="lightgreen")
-            elif i in vale_positsioonid:
-                self.sõna_kastid[i // 5][i % 5].config(bg="lightyellow")
+                kast.config(bg="lightgreen", fg="blue")
+            elif i in vale_positsioonil:
+                kast.config(bg="yellow", fg="blue")
+            else:
+                kast.config(bg="pink", fg="blue")
 
-        if len(õiged_tähed) == len(self.sõna):
-            self.jäänud_katsed = 6
+        if "".join(praegune_sõna)==self.sõna:
+            self.jäänud_katsed=6
             self.aja_uuendamine()
             messagebox.showinfo("Tulemus", "Õige!")
-            self.praegune_sõna_indeks += 1
-            if self.praegune_sõna_indeks == len(self.sõnad):
+            self.praegune_sõna_indeks+=1
+            if self.praegune_sõna_indeks==len(self.sõnad):
                 self.näita_sõnumit("Palju Õnne", "Sa arvasid kõik sõnad ära!")
                 self.meister.destroy()
             else:
                 self.sõna = self.sõnad[self.praegune_sõna_indeks]
                 self.aja_uuendamine()
+                self.puhasta_ruudustik() 
+                self.current_row=0  
         else:
-            self.jäänud_katsed -= 1
+            self.jäänud_katsed-=1
             self.aja_uuendamine()
             messagebox.showinfo("Tulemus", "Vale!")
-            if self.jäänud_katsed == 0:
+            if self.jäänud_katsed==0:
                 self.mäng_läbi()
+            else:
+                for kast in self.sõna_kastid[self.current_row]:
+                    kast.delete(0, tk.END)
+                self.current_row+=1 
+                if self.current_row>=len(self.sõna_kastid):
+                    self.current_row=0 
 
     def aja_uuendamine(self):
         self.katsete_silt.config(text=f"Katseid jäänud: {self.jäänud_katsed}")
@@ -161,10 +164,14 @@ class WordleMäng:
     def näita_sõnumit(self, pealkiri, sõnum):
         messagebox.showinfo(pealkiri, sõnum)
 
+    def mäng_läbi(self):
+        messagebox.showinfo("Mäng läbi", f"Õige sõna oli: {self.sõna}")
+        self.aktiivne_pozitsioon=1
+
 def käivita_mäng():
     juur = tk.Tk()
     mäng = WordleMäng(juur)
     juur.mainloop()
 
-if __name__ == "__main__":
+if __name__=="__main__":
     käivita_mäng()
