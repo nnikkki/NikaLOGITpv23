@@ -33,9 +33,9 @@ class WordleMäng:
 
         self.loo_sõnaruudustik()
         self.loo_tähestikuruudustik()
+
         self.loo_kinnituse_nupp()
         self.loo_katsete_loendur()
-
         self.aja_uuendamine()
 
     def lae_sõnad(self):
@@ -85,11 +85,12 @@ class WordleMäng:
         self.tähestiku_raam=tk.Frame(self.meister, bg="lightblue")
         self.tähestiku_raam.pack(side="top")
 
-        tähestik="abcdefghijklmnopqrstuvwxyzõüäö"
+        tähestik="abcdefghijklmnopqrstuvwxyzõüäöš"
 
         for i, täht in enumerate(tähestik):
             rida=i//9
-            nupp=tk.Button(self.tähestiku_raam, text=täht, width=3, font=("Helvetica", 16), bg="pink", command=lambda t=täht: self.vali_täht(t))
+            nupp=tk.Button(self.tähestiku_raam, text=täht, width=3,
+                          font=("Helvetica", 16), bg="pink", command=lambda t=täht: self.vali_täht(t))
             nupp.grid(row=rida, column=i % 9)
 
     def loo_kinnituse_nupp(self):
