@@ -1,21 +1,26 @@
-﻿import pygame
-import math
+﻿import pygame  
+import math 
 
-pygame.init()
-ekraani_pind = pygame.display.set_mode((800, 600))
-ekraani_pind.fill((135, 206, 235)) 
+pygame.init() 
+
+ekraani_pind = pygame.display.set_mode((800, 600))  
+ekraani_pind.fill((135, 206, 235))  
 
 
 pygame.draw.circle(ekraani_pind, (255, 255, 0), (60, 60), 50)
+
+
 for i in range(0, 360, 30):
     angle = math.radians(i)
-    x = 60 + 90 * math.cos(angle)
-    y = 60 + 90 * math.sin(angle)
+    x = 60 + 90 * math.cos(angle)  #  x-координаты конца линии.
+    y = 60 + 90 * math.sin(angle)  #  y-координаты конца линии.
     pygame.draw.line(ekraani_pind, (255, 255, 0), (60, 60), (x, y), 5)
 
 
 cloud_colors = [(255, 255, 255), (245, 245, 245)]
 cloud_positions = [(200, 150), (500, 120)]
+
+
 for i in range(len(cloud_positions)):
     pygame.draw.circle(ekraani_pind, cloud_colors[i], cloud_positions[i], 50)
     pygame.draw.circle(ekraani_pind, cloud_colors[i], (cloud_positions[i][0] + 50, cloud_positions[i][1]), 50)
@@ -32,13 +37,15 @@ for i in range(0, 800, 10):
 
 
 pilt = pygame.image.load("111.png")
-pilt = pygame.transform.scale(pilt, (200, 150)) 
+pilt = pygame.transform.scale(pilt, (200, 150))
 pilt_rect = pilt.get_rect(bottomleft=(50, 600))  
-ekraani_pind.blit(pilt, pilt_rect)
+ekraani_pind.blit(pilt, pilt_rect)  
+
 
 def draw_triangle_flower(x, y):
-    pygame.draw.line(ekraani_pind, (0, 255, 0), (x, 500), (x, y), 5)
-    pygame.draw.circle(ekraani_pind, (255, 0, 0), (x, y - 10), 15)
+    pygame.draw.line(ekraani_pind, (0, 255, 0), (x, 500), (x, y), 5)  # Рисование стебля.
+    pygame.draw.circle(ekraani_pind, (255, 0, 0), (x, y - 10), 15)  # Рисование центра цветка.
+    # Рисование лепестков вокруг центра цветка.
     for i in range(0, 360, 45):
         angle = math.radians(i)
         petal_x = x + 40 * math.cos(angle)
@@ -48,8 +55,10 @@ def draw_triangle_flower(x, y):
 
 flower_positions = [(100, 450), (200, 460), (300, 440), (400, 470), (500, 430),
                     (600, 450), (150, 480), (250, 440), (350, 460), (450, 430)]
+
 for pos in flower_positions:
     draw_triangle_flower(pos[0], pos[1])
+
 
 tekst = "Tere, Pygame"
 meie_font = pygame.font.SysFont("Verdana", 36)
@@ -57,7 +66,6 @@ teksti_pilt = meie_font.render(tekst, False, (250, 250, 100))
 ekraani_pind.blit(teksti_pilt, (300, 30))
 
 pygame.display.flip()
-
 
 running = True
 while running:
