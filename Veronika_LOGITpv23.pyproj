@@ -54,6 +54,7 @@
     <Content Include="salasõna.txt" />
     <Content Include="win.jpg" />
     <Content Include="wordle.txt" />
+    <Content Include="zvuk.mp3" />
     <Content Include="контрольная.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
