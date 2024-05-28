@@ -10,8 +10,8 @@ pink = [255, 153, 255]
 LGreen = [153, 255, 153]
 LBlue = [153, 204, 255]
 
-pygame.mixer.music.load("zvuk.mp3")
-pygame.mixer.music.play(2)
+#pygame.mixer.music.load("zvuk.mp3")
+#pygame.mixer.music.play(2)
 # ekraani seaded
 screenX = 640
 screenY = 480
@@ -20,9 +20,9 @@ pygame.display.set_caption("Animeerimine")
 screen.fill(LBlue)
 
 clock = pygame.time.Clock()  # lisame kell
-playerImage = pygame.Surface((120, 140))
+playerImage = pygame.image.load("111.png")
 playerImage.fill(red)
-enemyImage = pygame.Surface((60, 73))
+enemyImage = pygame.image.load("rabbit.png")
 enemyImage.fill(blue)
 posX, posY = 0, 0  # kiirus ja asukoht
 speedX, speedY = 3, 3
