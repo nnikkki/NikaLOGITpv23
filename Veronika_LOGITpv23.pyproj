@@ -43,6 +43,7 @@
     <Compile Include="wordle.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="123.png" />
     <Content Include="Ankeet.txt" />
     <Content Include="iconn.ico" />
     <Content Include="111.png" />
