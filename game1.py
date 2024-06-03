@@ -2,10 +2,8 @@ import pygame
 import random
 import sys
 
-# Initialize Pygame
 pygame.init()
 
-# Constants
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 CELL_SIZE = 40
@@ -53,58 +51,43 @@ def create_start_end(walls):
     return start, end
 
 # Function to display the start screen with options to start or read controls
-def start_screen():
+def start_screen(screen):
     font = pygame.font.Font(None, 36)
-    start_text = font.render("Press ENTER to start", True, (255, 255, 255))
-    controls_text = font.render("Press 'i' for controls", True, (255, 255, 255))
+    start_text = font.render("Start", True, (255, 255, 255))
+    instructions_text = [
+        "Controls:",
+        "Arrow keys to move",
+        "Avoid enemies",
+        "Collect all crystals to proceed"
+    ]
+    
+    start_button_rect = pygame.Rect(SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 + 50, 100, 50)
     
     running = True
     while running:
         screen.fill(START_END_BACKGROUND_COLOR)
         screen.blit(player_title_image, (SCREEN_WIDTH // 2 - 50, SCREEN_HEIGHT // 2 - 50))
-        screen.blit(start_text, (SCREEN_WIDTH // 2 - start_text.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
-        screen.blit(controls_text, (SCREEN_WIDTH // 2 - controls_text.get_width() // 2, SCREEN_HEIGHT // 2 + 100))
+        
+        # Рисуем кнопку старта
+        pygame.draw.rect(screen, (0, 0, 255), start_button_rect)
+        screen.blit(start_text, (start_button_rect.centerx - start_text.get_width() // 2, start_button_rect.centery - start_text.get_height() // 2))
+        
+        for i, line in enumerate(instructions_text):
+            instruction_rendered = font.render(line, True, (255, 255, 255))
+            screen.blit(instruction_rendered, (SCREEN_WIDTH // 2 - instruction_rendered.get_width() // 2, SCREEN_HEIGHT // 2 + 100 + i * 40))
+        
         pygame.display.flip()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    running = False
-                elif event.key == pygame.K_i:
-                    show_controls_screen()
-
-# Function to display the controls screen
-def show_controls_screen():
-    font = pygame.font.Font(None, 36)
-    controls = [
-        "Controls:",
-        "Arrow keys to move",
-        "Avoid enemies",
-        "Collect all crystals to proceed",
-        "Press ENTER to return"
-    ]
-    
-    running = True
-    while running:
-        screen.fill(START_END_BACKGROUND_COLOR)
-        for i, line in enumerate(controls):
-            text = font.render(line, True, (255, 255, 255))
-            screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, 100 + i * 40))
-        pygame.display.flip()
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button_rect.collidepoint(event.pos):  # Проверяем, был ли щелчок мыши внутри кнопки
                     running = False
 
 # Function to display the game over screen
-def game_over_screen():
+def game_over_screen(screen):
     font = pygame.font.Font(None, 50)
     game_over_text = font.render("Game Over", True, (255, 255, 255))
     restart_text = font.render("Press ENTER to restart", True, (255, 255, 255))
@@ -123,14 +106,14 @@ def game_over_screen():
                     return
 
 # Function to display the win screen
-def win_screen():
+def win_screen(screen):
     font = pygame.font.Font(None, 50)
     win_text = font.render("You Win!", True, (255, 255, 255))
     restart_text = font.render("Press ENTER to restart", True, (255, 255, 255))
     controls_text = font.render("Press 'i' for controls", True, (255, 255, 255))
     while True:
         screen.fill(START_END_BACKGROUND_COLOR)
-        screen.blit(win_text, (SCREEN_WIDTH // 2 - win_text.get_width() // 2, SCREEN_HEIGHT // 2 -win_text.get_height() // 2))
+        screen.blit(win_text, (SCREEN_WIDTH // 2 - win_text.get_width() // 2, SCREEN_HEIGHT // 2 - win_text.get_height() // 2))
         screen.blit(restart_text, (SCREEN_WIDTH // 2 - restart_text.get_width() // 2, SCREEN_HEIGHT // 2 + 50))
         screen.blit(controls_text, (SCREEN_WIDTH // 2 - controls_text.get_width() // 2, SCREEN_HEIGHT // 2 + 100))
         pygame.display.flip()
@@ -161,7 +144,7 @@ def generate_level(level):
                                random.randint(0, (SCREEN_HEIGHT // CELL_SIZE) - 1) * CELL_SIZE,
                                CELL_SIZE, CELL_SIZE)
         if obstacle.collidelist([pygame.Rect(wall[0], (CELL_SIZE, CELL_SIZE)) for wall in walls]) == -1:
-            obstacles.append(obstacle)
+               obstacles.append(obstacle)
     
     crystals = []
     for _ in range(5):
@@ -207,8 +190,8 @@ def update_screen():
     pygame.time.Clock().tick(30)
 
 # Main game function
-def main_game():
-    start_screen()
+def main_game(screen):
+    start_screen(screen)
     level = 1
     lives = LIVES
     while level <= MAX_LEVELS and lives > 0:
@@ -217,7 +200,6 @@ def main_game():
         player = start.copy()
         collected_crystals = 0
         running = True
-
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -233,47 +215,28 @@ def main_game():
                 player.move_ip(0, -PLAYER_SPEED)
             if keys[pygame.K_DOWN] and player.bottom < SCREEN_HEIGHT:
                 player.move_ip(0, PLAYER_SPEED)
-
-            # Check for collisions with walls
             if any(pygame.Rect(wall[0], (CELL_SIZE, CELL_SIZE)).colliderect(player) for wall in walls):
                 player = start.copy()
-
-            # Check for crystal collection
-            crystal_index = player.collidelist(crystals)
+                crystal_index = player.collidelist(crystals)
             if crystal_index != -1:
                 del crystals[crystal_index]
                 collected_crystals += 1
-
-            # Check if player reached the goal
             if collected_crystals >= 5 and player.colliderect(end):
                 level += 1
                 break
-                        # Check for collisions with enemies
             if player.collidelist(enemies) != -1:
                 lives -= 1
                 if lives <= 0:
-                    game_over_screen()
+                    game_over_screen(screen)
                     return
                 player = start.copy()
-
             draw_level(walls, obstacles, crystals, start, end, enemies)
-            screen.blit(player_image, player)
-
-            # Display level and lives
-            font = pygame.font.Font(None, 36)
-            level_text = font.render(f"Level: {level}", True, (255, 255, 255))
-            lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
-            crystals_text = font.render(f"Crystals: {collected_crystals}/5", True, (255, 255, 255))
-            screen.blit(level_text, (10, 10))
-            screen.blit(lives_text, (10, 50))
-            screen.blit(crystals_text, (10, 90))
-
             update_screen()
 
         if level > MAX_LEVELS:
-            win_screen()
+            win_screen(screen)
 
-# Start the game
-main_game()
+# Запуск игры
+main_game(screen)
 pygame.quit()
 
